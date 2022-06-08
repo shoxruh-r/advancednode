@@ -37,7 +37,10 @@ myDB(async client => {
   // Be sure to change the title
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
-    res.render(process.cwd() + '/views/pug/index', { title: 'Hello', message: 'Please login' })
+    res.render(process.cwd() + '/views/pug/index', { 
+      title: "Connected to Database", 
+      message: 'Please login' 
+    })
   });
 
   // Serialization and deserialization here...
@@ -53,7 +56,10 @@ myDB(async client => {
   // Be sure to add this...
 }).catch(e => {
   app.route('/').get((req, res) => {
-    res.render(process.cwd() + '/views/pug/index', { title: e, message: 'Unable to login' });
+    res.render(process.cwd() + '/views/pug/index', { 
+      title: e, 
+      message: 'Unable to login'
+    });
   });
 });
 
