@@ -32,9 +32,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 passport.use(new LocalStrategy(
-  function(username, password, done) {
+  function (username, password, done) {
     myDataBase.findOne({ username: username }, function (err, user) {
-      console.log('User '+ username +' attempted to log in.');
+      console.log('User ' + username + ' attempted to log in.');
       if (err) { return done(err); }
       if (!user) { return done(null, false); }
       if (password !== user.password) { return done(null, false); }
@@ -47,13 +47,16 @@ passport.use(new LocalStrategy(
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users')
 
-  // Be sure to change the title
   app.route('/').get((req, res) => {
-    // Change the response to render the Pug template
     res.render(process.cwd() + '/views/pug/index', {
       title: "Connected to Database",
-      message: 'Please login'
+      message: 'Please login',
+      showLogin: true
     })
+  })
+
+  app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+    console.log(`User ${req.body.username} attempted to log in.`)
   })
 
   // Serialization and deserialization here...
