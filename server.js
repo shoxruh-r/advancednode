@@ -5,9 +5,11 @@ require('dotenv').config()
 const express = require('express')
 const passport = require('passport')
 const session = require('express-session')
-const myDB = require('./connection')
 const { ObjectId } = require('mongodb')
 const LocalStrategy = require('passport-local')
+
+const myDB = require('./connection')
+const ensureAuthenticated = require('./middlewares/ensureAuthenticated')
 const fccTesting = require('./freeCodeCamp/fcctesting.js')
 
 
@@ -32,16 +34,23 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 passport.use(new LocalStrategy(
-  function (username, password, done) {
-    myDataBase.findOne({ username: username }, function (err, user) {
-      console.log('User ' + username + ' attempted to log in.');
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (password !== user.password) { return done(null, false); }
-      return done(null, user);
-    });
+  (username, password, done) => {
+    myDataBase.findOne({ username: username }, (err, user) => {
+      console.log(`User ${username} attempted to log in.`)
+
+      if (err)
+        return done(err)
+
+      if (!user)
+        return done(null, false)
+
+      if (password !== user.password)
+        return done(null, false)
+
+      return done(null, user)
+    })
   }
-));
+))
 
 
 myDB(async client => {
@@ -56,8 +65,14 @@ myDB(async client => {
   })
 
   app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
-    console.log(`User ${req.body.username} attempted to log in.`)
+
   })
+
+  app
+    .route('/profile')
+    .get(ensureAuthenticated, (req, res) => {
+      res.render(process.cwd() + '/views/pug/profile')
+    })
 
   // Serialization and deserialization here...
   passport.serializeUser((user, done) => {
