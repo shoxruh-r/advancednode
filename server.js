@@ -53,6 +53,14 @@ passport.use(new LocalStrategy(
 ))
 
 
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated())
+      return next()
+
+  res.redirect('/')
+}
+
+
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users')
 
