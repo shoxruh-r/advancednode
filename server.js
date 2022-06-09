@@ -7,6 +7,7 @@ const passport = require('passport')
 const session = require('express-session')
 const { ObjectId } = require('mongodb')
 const LocalStrategy = require('passport-local')
+const bcrypt = require('bcrypt')
 
 const myDB = require('./connection')
 const fccTesting = require('./freeCodeCamp/fcctesting.js')
@@ -43,7 +44,7 @@ passport.use(new LocalStrategy(
       if (!user)
         return done(null, false)
 
-      if (password !== user.password)
+      if (!bcrypt.compareSync(password, user.password))
         return done(null, false)
 
       return done(null, user)
@@ -96,21 +97,24 @@ myDB(async client => {
     .post((req, res, next) => {
       myDataBase.findOne({ username: req.body.username }, (err, user) => {
         if (err)
-          next(err)
-        else if (user)
-          res.redirect('/')
-        else
-          myDataBase.insertOne({
-            username: req.body.username,
-            password: req.body.password
-          }, (err, doc) => {
-            if (err)
-              res.redirect('/')
-            else
-              // The inserted document is held within
-              // the ops property of the doc
-              next(null, doc.ops[0])
-          })
+          return next(err)
+
+        if (user)
+          return res.redirect('/')
+
+        const hash = bcrypt.hashSync(req.body.password, 12)
+
+        myDataBase.insertOne({
+          username: req.body.username,
+          password: hash
+        }, (err, doc) => {
+          if (err)
+            res.redirect('/')
+          else
+            // The inserted document is held within
+            // the ops property of the doc
+            next(null, doc.ops[0])
+        })
       })
     }, passport.authenticate('local', { failureRedirect: '/' }), (req, res, next) => {
       res.redirect('/profile')
