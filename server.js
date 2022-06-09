@@ -9,7 +9,6 @@ const { ObjectId } = require('mongodb')
 const LocalStrategy = require('passport-local')
 
 const myDB = require('./connection')
-const ensureAuthenticated = require('./middlewares/ensureAuthenticated')
 const fccTesting = require('./freeCodeCamp/fcctesting.js')
 
 
