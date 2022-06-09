@@ -63,23 +63,35 @@ const ensureAuthenticated = (req, res, next) => {
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users')
 
-  app.route('/').get((req, res) => {
-    res.render(process.cwd() + '/views/pug/index', {
-      title: "Connected to Database",
-      message: 'Please login',
-      showLogin: true
+  app.route('/')
+    .get((req, res) => {
+      res.render(process.cwd() + '/views/pug/index', {
+        title: "Connected to Database",
+        message: 'Please login',
+        showLogin: true
+      })
     })
-  })
 
   app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
 
   })
 
-  app
-    .route('/profile')
+  app.route('/logout')
+    .get((req, res) => {
+      req.logout()
+      res.redirect('/')
+    })
+
+  app.route('/profile')
     .get(ensureAuthenticated, (req, res) => {
       res.render(process.cwd() + '/views/pug/profile', { username: req.user.username })
     })
+
+  app.use((req, res, next) => {
+    res.status(404)
+      .type('text')
+      .send('Not Found')
+  })
 
   // Serialization and deserialization here...
   passport.serializeUser((user, done) => {
