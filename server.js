@@ -40,16 +40,22 @@ myDB(async client => {
     .db('database')
     .collection('users')
 
-  let currentUsers
+  let currentUsers = 0
 
   io.on('connection', socket => {
-    ++currentUsers
     console.log('A user has connected')
+
+    io.emit('user count', ++currentUsers)
+
+    socket.on('user count', data => {
+      console.log(data)
+    })
+
+    socket.on('disconnect', () => {
+      /* anything you want to do on disconnect */
+      console.log("Disconnected.")
+    })
   })
-
-  io.emit('disconnect')
-
-  io.emit('user count', currentUsers)
 
   routes(app, myDataBase)
   auth(app, myDataBase)
