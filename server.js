@@ -44,6 +44,14 @@ myDB(async client => {
     console.log('A user has connected')
   })
 
+  let currentUsers
+
+  io.emit('user count', currentUsers)
+
+  socket.on('user count', data => {
+    console.log(data)
+  })
+
   routes(app, myDataBase)
   auth(app, myDataBase)
 

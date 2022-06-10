@@ -74,6 +74,8 @@ module.exports = function (app, myDataBase) {
     })
 
     app.get('/chat', ensureAuthenticated, (req, res) => {
+        ++currentUsers
+
         res.render('pug/chat', { user: req.user })
     })
 }
