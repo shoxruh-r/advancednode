@@ -73,17 +73,22 @@ myDB(async client => {
   let currentUsers = 0
 
   io.on('connection', socket => {
-    console.log(`user ${socket.request.user.name} connected`)
+    const { name } = socket.request.user
+    console.log(`user ${name} connected`)
 
     io.emit('user', {
-      name: socket.request.user.name,
+      name,
       currentUsers,
       connected: true
-    });
+    })
 
     socket.on('disconnect', () => {
       /* anything you want to do on disconnect */
       console.log("Disconnected.")
+    })
+
+    socket.on('chat message', data => {
+      io.emit('chat message', { name: data.name, message: data.message })
     })
   })
 
