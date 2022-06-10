@@ -48,9 +48,9 @@ myDB(async client => {
 
   io.emit('user count', currentUsers)
 
-  socket.on('user count', data => {
-    console.log(data)
-  })
+  // socket.on('user count', data => {
+  //   console.log(data)
+  // })
 
   routes(app, myDataBase)
   auth(app, myDataBase)
