@@ -1,8 +1,8 @@
 $(document).ready(function () {
   let socket = io()
 
-  socket.on('user count', () => {
-    console.log("")
+  socket.on('user count', data => {
+    console.log(data)
   })
 
   // Form submittion with new message in field with id 'm'
