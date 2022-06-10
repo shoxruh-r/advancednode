@@ -41,10 +41,13 @@ myDB(async client => {
     .collection('users')
 
   let currentUsers
+
   io.on('connection', socket => {
     ++currentUsers
     console.log('A user has connected')
   })
+
+  io.emit('disconnect')
 
   io.emit('user count', currentUsers)
 
