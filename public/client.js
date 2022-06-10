@@ -1,13 +1,17 @@
 $(document).ready(function () {
   let socket = io()
 
-  
-  ++currentUsers
-
-  io.emit('user count', currentUsers)
-
   socket.on('user count', data => {
     console.log(data)
+  })
+
+  socket.on('connect', () => {
+    console.log("Connected")
+    
+    socket.on('disconnect', () => {
+      /*anything you want to do on disconnect*/
+      console.log("Disconnected")
+    })
   })
 
   // Form submittion with new message in field with id 'm'
